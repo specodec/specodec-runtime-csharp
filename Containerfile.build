@@ -1,0 +1,10 @@
+FROM dev:all AS builder
+WORKDIR /app
+ARG HTTP_PROXY HTTPS_PROXY http_proxy https_proxy ALL_PROXY all_proxy
+ENV PATH="/root/.local/share/mise/shims:$PATH"
+COPY *.csproj ./
+COPY *.cs ./
+COPY Ryu/ Ryu/
+RUN dotnet build -c Release --nologo
+FROM scratch
+COPY --from=builder /app/bin/Release/ /out/
