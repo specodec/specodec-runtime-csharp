@@ -9,8 +9,7 @@ class TestRyu
 {
     static void Main()
     {
-        string dir = Environment.GetEnvironmentVariable("TEST_DIR") ??
-                     "/home/ytr/Specodec/specodec-runtime-ts/tests/ryu/";
+        string dir = Environment.GetEnvironmentVariable("TEST_DIR") ?? "./";
 
         int passed = 0, failed = 0;
 

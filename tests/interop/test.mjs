@@ -16,7 +16,7 @@ function run(cmd) {
 console.log('\n=== Step 1: Install dependencies ===');
 run(`npm install`);
 
-if (!existsSync(join(CACHE, 'vectors'))) { console.log('\n=== Step 2: Clone tests repo ==='); if (existsSync(CACHE)) rmSync(CACHE, { recursive: true }); run(`git clone --depth=1 https://github.com/specodec/tests ${CACHE}`) } else { console.log('\n=== Step 2: Using cached .tests-cache ===') }
+console.log('\n=== Step 2: Using cached .tests-cache ===');
 
 console.log('\n=== Step 3: Generate vectors ===');
 run(`cd ${CACHE} && npm install --silent && node gen_types.mjs`);
@@ -66,7 +66,7 @@ writeFileSync(join(emitDir, 'emit.csproj'), csproj);
 console.log('\n=== Step 7: Run tests ===');
 if (existsSync(OUT_DIR)) rmSync(OUT_DIR, { recursive: true });
 mkdirSync(OUT_DIR, { recursive: true });
-try { run(`cd ${emitDir} && VEC_DIR=${VEC_DIR} OUT_DIR=${OUT_DIR} dotnet run --project emit.csproj`); } catch (e) { console.log("C# tests completed (some failures expected)"); }
+try { run(`cd ${emitDir} && export VEC_DIR=${VEC_DIR} && export OUT_DIR=${OUT_DIR} && dotnet run --project emit.csproj`); } catch (e) { console.log("C# tests completed (some failures expected)"); }
 
 console.log('\n=== Step 8: Compare output ===');
 const manifest = JSON.parse(readFileSync(join(VEC_DIR, 'manifest.json'), 'utf-8'));
@@ -80,13 +80,13 @@ for (const [name] of Object.entries(manifest.scalars || {})) {
   else { mismatch++; console.log(`MISMATCH: ${name}.mp`); }
 }
 for (const model of manifest.testModels || []) {
-  for (const fmt of ['msgpack', 'json', 'gron', 'unformatted.json']) {
-    const expected = join(VEC_DIR, `${model}.${fmt}`);
-    const actual = join(OUT_DIR, `${model}.${fmt}`);
+  for (const [outExt, vecExt] of [['msgpack','msgpack'], ['json','json'], ['unformatted.json','json'], ['gron','gron']]) {
+    const expected = join(VEC_DIR, `${model}.${vecExt}`);
+    const actual = join(OUT_DIR, `${model}.${outExt}`);
     if (!existsSync(expected)) continue;
-    if (!existsSync(actual)) { mismatch++; console.log(`MISSING: ${model}.${fmt}`); continue; }
+    if (!existsSync(actual)) { mismatch++; console.log(`MISSING: ${model}.${outExt}`); continue; }
     if (readFileSync(expected).equals(readFileSync(actual))) match++;
-    else { mismatch++; console.log(`MISMATCH: ${model}.${fmt}`); }
+    else { mismatch++; console.log(`MISMATCH: ${model}.${outExt}`); }
   }
 }
 const total = match + mismatch;

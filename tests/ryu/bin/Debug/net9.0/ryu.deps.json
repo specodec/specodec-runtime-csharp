@@ -1,0 +1,52 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v9.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v9.0": {
+      "ryu/1.0.0": {
+        "dependencies": {
+          "specodec": "0.0.1",
+          "specodec.Reference": "0.0.1.0"
+        },
+        "runtime": {
+          "ryu.dll": {}
+        }
+      },
+      "specodec/0.0.1": {
+        "runtime": {
+          "specodec.dll": {
+            "fileVersion": "0.0.0.0"
+          }
+        }
+      },
+      "specodec.Reference/0.0.1.0": {
+        "runtime": {
+          "specodec.dll": {
+            "assemblyVersion": "0.0.1.0",
+            "fileVersion": "0.0.1.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "ryu/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "specodec/0.0.1": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "specodec.Reference/0.0.1.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}
