@@ -98,7 +98,7 @@ for (const model of models) {
 }
 
 const code = `using Specodec;
-using Alltypes;
+using AllTypes;
 using System;
 using System.IO;
 

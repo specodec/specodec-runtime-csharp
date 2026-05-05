@@ -1,5 +1,5 @@
 using Specodec;
-using Alltypes;
+using AllTypes;
 using System;
 using System.IO;
 
