@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("specodec")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("0.0.1.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("0.0.1+bc8b90bb14dedcc31a2775efc0d43e20c125e613")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("0.0.1+f60cdad2402a77aec1984e05a0a9d139131d3c45")]
 [assembly: System.Reflection.AssemblyProductAttribute("specodec")]
 [assembly: System.Reflection.AssemblyTitleAttribute("specodec")]
 [assembly: System.Reflection.AssemblyVersionAttribute("0.0.1.0")]

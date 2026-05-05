@@ -3,6 +3,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 
 const __dir = path.dirname(fileURLToPath(import.meta.url));
+const EMIT_GEN = path.join(__dir, 'emit_gen');
 const VEC_DIR = process.env.VEC_DIR || path.join(__dir, ".tests-cache", "vectors");
 
 const manifestPath = path.join(VEC_DIR, "manifest.json");
@@ -26,8 +27,23 @@ function getWriteMethod(type) {
   return map[type] || "WriteInt32";
 }
 
+function nsSnake(ns) {
+  return ns.replace(/\./g, '_').replace(/([A-Z])/g, (m,c,off)=>(off>0?'_':'')+c.toLowerCase());
+}
+
+// --- Discover namespaces from emit_gen for using statements ---
+const csFiles = fs.readdirSync(EMIT_GEN).filter(f => f.endsWith('.cs'));
+const namespaces = csFiles.map(f => {
+  const content = fs.readFileSync(path.join(EMIT_GEN, f), 'utf-8');
+  const m = content.match(/namespace ([\w.]+);/);
+  return m ? m[1] : null;
+}).filter(Boolean);
+const allUsingStatements = [...new Set([...namespaces, 'Specodec', 'System', 'System.IO'])].map(ns => `using ${ns};`).join('\n');
+
+// --- Scalar test functions ---
 let scalarFuncs = '';
 let scalarCalls = '';
+
 for (const [name, info] of Object.entries(scalars)) {
   const pascal = toPascalCase(name);
   scalarFuncs += `
@@ -47,11 +63,30 @@ for (const [name, info] of Object.entries(scalars)) {
   scalarCalls += `        TestScalar${pascal}(ref passed, ref failed);\n`;
 }
 
-let modelFuncs = '';
-let modelCalls = '';
+// --- Group models by namespace ---
+const modelNamespaces = manifest.modelNamespaces || {};
+const nsGroups = {};
 for (const model of models) {
-  modelFuncs += `
-    void TestModel${model}(ref int passed, ref int failed) {
+  const ns = modelNamespaces[model] || "AllTypes";
+  if (!nsGroups[ns]) nsGroups[ns] = [];
+  nsGroups[ns].push(model);
+}
+
+// --- Generate test file per namespace ---
+const outDirPath = path.join(__dir, "emit");
+fs.mkdirSync(outDirPath, { recursive: true });
+
+const nsOrder = Object.keys(nsGroups);
+
+for (const [ns, nsModels] of Object.entries(nsGroups)) {
+  const sn = nsSnake(ns);
+
+  let modelFuncs = '';
+  let modelCalls = '';
+
+  for (const model of nsModels) {
+    modelFuncs += `
+    static void TestModel${model}(ref int passed, ref int failed, string vecDir, string outDir) {
         try {
             var data = File.ReadAllBytes($"{vecDir}/${model}.msgpack");
             var r = new MsgPackReader(data);
@@ -94,13 +129,29 @@ for (const model of models) {
         } catch (Exception e) { failed++; Console.WriteLine($"FAIL ${model} gron: {e.Message}"); }
     }
 `;
-  modelCalls += `        TestModel${model}(ref passed, ref failed);\n`;
+    modelCalls += `        TestModel${model}(ref passed, ref failed, vecDir, outDir);\n`;
+  }
+
+  const testCode = `${allUsingStatements}
+
+public static class EmitTest_${sn} {
+    public static void Run(ref int passed, ref int failed, string vecDir, string outDir) {
+${modelCalls}    }
+${modelFuncs}
+}
+`;
+  fs.writeFileSync(path.join(outDirPath, `EmitTest_${sn}.cs`), testCode);
+  console.log(`  EmitTest_${sn}.cs: ${nsModels.length} models`);
 }
 
-const code = `using Specodec;
-using AllTypes;
-using System;
-using System.IO;
+// --- Generate main Program.cs ---
+let mainCalls = '';
+for (const ns of nsOrder) {
+  const sn = nsSnake(ns);
+  mainCalls += `        EmitTest_${sn}.Run(ref passed, ref failed, vecDir, outDir);\n`;
+}
+
+const mainCode = `${allUsingStatements}
 
 var vecDir = Environment.GetEnvironmentVariable("VEC_DIR") ?? throw new Exception("VEC_DIR not set");
 var outDir = Environment.GetEnvironmentVariable("OUT_DIR") ?? throw new Exception("OUT_DIR not set");
@@ -109,19 +160,15 @@ int passed = 0;
 int failed = 0;
 
 ${scalarFuncs}
-${modelFuncs}
 
 // Scalar tests
 ${scalarCalls}
-// Model tests
-${modelCalls}
+// Model tests (by namespace)
+${mainCalls}
 
 Console.WriteLine($"emit-csharp: {passed} passed, {failed} failed");
 if (failed > 0) Environment.Exit(1);
 `;
 
-const outDirPath = path.join(__dir, "emit");
-fs.mkdirSync(outDirPath, { recursive: true });
-const outFile = path.join(outDirPath, "Program.cs");
-fs.writeFileSync(outFile, code);
-console.log(`Generated emit/Program.cs with ${models.length} models + ${Object.keys(scalars).length} scalars`);
+fs.writeFileSync(path.join(outDirPath, "Program.cs"), mainCode);
+console.log(`Generated emit/Program.cs + ${nsOrder.length} namespace test files (${models.length} models + ${Object.keys(scalars).length} scalars)`);
