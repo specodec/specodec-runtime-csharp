@@ -9,8 +9,11 @@ const VEC_DIR = process.env.VEC_DIR || path.join(__dir, ".tests-cache", "vectors
 const manifestPath = path.join(VEC_DIR, "manifest.json");
 const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf-8"));
 
-const models = manifest.testModels || [];
+const models = [...(manifest.testModels || []), ...(manifest.testUnions || [])];
 const scalars = manifest.scalars || {};
+const testUnions = new Set(manifest.testUnions || []);
+function isUnionTest(name) { return testUnions.has(name); }
+function unionNameOf(testName) { return testName.replace(/_[^_]+$/, ''); }
 
 function toPascalCase(name) {
   let result = name.replace(/\./g, '_').replace(/-/g, '_');
@@ -85,14 +88,15 @@ for (const [ns, nsModels] of Object.entries(nsGroups)) {
   let modelCalls = '';
 
   for (const model of nsModels) {
+    const codecName = isUnionTest(model) ? unionNameOf(model) : model;
     modelFuncs += `
     static void TestModel${model}(ref int passed, ref int failed, string vecDir, string outDir) {
         try {
             var data = File.ReadAllBytes($"{vecDir}/${model}.msgpack");
             var r = new MsgPackReader(data);
-            var obj = ${model}Methods.${model}Codec.Decode(r);
+            var obj = ${codecName}Methods.${codecName}Codec.Decode(r);
             var w = new MsgPackWriter();
-            ${model}Methods.${model}Codec.Encode(w, obj);
+            ${codecName}Methods.${codecName}Codec.Encode(w, obj);
             Directory.CreateDirectory(Path.GetDirectoryName($"{outDir}/${model}.msgpack")!);
             File.WriteAllBytes($"{outDir}/${model}.msgpack", w.ToBytes());
             passed++;
@@ -100,9 +104,9 @@ for (const [ns, nsModels] of Object.entries(nsGroups)) {
         try {
             var data = File.ReadAllBytes($"{vecDir}/${model}.json");
             var r = new JsonReader(data);
-            var obj = ${model}Methods.${model}Codec.Decode(r);
+            var obj = ${codecName}Methods.${codecName}Codec.Decode(r);
             var w = new JsonWriter();
-            ${model}Methods.${model}Codec.Encode(w, obj);
+            ${codecName}Methods.${codecName}Codec.Encode(w, obj);
             Directory.CreateDirectory(Path.GetDirectoryName($"{outDir}/${model}.json")!);
             File.WriteAllBytes($"{outDir}/${model}.json", w.ToBytes());
             passed++;
@@ -110,9 +114,9 @@ for (const [ns, nsModels] of Object.entries(nsGroups)) {
         try {
             var data = File.ReadAllBytes($"{vecDir}/${model}.unformatted.json");
             var r = new JsonReader(data);
-            var obj = ${model}Methods.${model}Codec.Decode(r);
+            var obj = ${codecName}Methods.${codecName}Codec.Decode(r);
             var w = new JsonWriter();
-            ${model}Methods.${model}Codec.Encode(w, obj);
+            ${codecName}Methods.${codecName}Codec.Encode(w, obj);
             Directory.CreateDirectory(Path.GetDirectoryName($"{outDir}/${model}.unformatted.json")!);
             File.WriteAllBytes($"{outDir}/${model}.unformatted.json", w.ToBytes());
             passed++;
@@ -120,9 +124,9 @@ for (const [ns, nsModels] of Object.entries(nsGroups)) {
         try {
             var data = File.ReadAllBytes($"{vecDir}/${model}.gron");
             var r = new GronReader(data);
-            var obj = ${model}Methods.${model}Codec.Decode(r);
+            var obj = ${codecName}Methods.${codecName}Codec.Decode(r);
             var w = new GronWriter();
-            ${model}Methods.${model}Codec.Encode(w, obj);
+            ${codecName}Methods.${codecName}Codec.Encode(w, obj);
             Directory.CreateDirectory(Path.GetDirectoryName($"{outDir}/${model}.gron")!);
             File.WriteAllBytes($"{outDir}/${model}.gron", w.ToBytes());
             passed++;

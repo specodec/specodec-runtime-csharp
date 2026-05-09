@@ -51,7 +51,7 @@ run(`cp -r ${EMIT_GEN} ${alltypesDir}`);
 const csproj = `<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
@@ -66,7 +66,7 @@ writeFileSync(join(emitDir, 'emit.csproj'), csproj);
 console.log('\n=== Step 7: Run tests ===');
 if (existsSync(OUT_DIR)) rmSync(OUT_DIR, { recursive: true });
 mkdirSync(OUT_DIR, { recursive: true });
-try { run(`cd ${emitDir} && export VEC_DIR=${VEC_DIR} && export OUT_DIR=${OUT_DIR} && dotnet run --project emit.csproj`); } catch (e) { console.log("C# tests completed (some failures expected)"); }
+try { run(`cd ${emitDir} && export VEC_DIR=${VEC_DIR} && export OUT_DIR=${OUT_DIR} && dotnet run --framework net10.0 --project emit.csproj`); } catch (e) { console.log("C# tests completed (some failures expected)"); }
 
 console.log('\n=== Step 8: Compare output ===');
 const manifest = JSON.parse(readFileSync(join(VEC_DIR, 'manifest.json'), 'utf-8'));

@@ -22,3 +22,15 @@
 /workspace/specodec-runtime-csharp/bin/Release/net8.0/specodec.dll
 /workspace/specodec-runtime-csharp/bin/Release/net8.0/specodec.pdb
 /workspace/specodec-runtime-csharp/obj/Release/net8.0/ref/specodec.dll
+/src/specodec-runtime-csharp/bin/Release/net8.0/specodec.deps.json
+/src/specodec-runtime-csharp/bin/Release/net8.0/specodec.dll
+/src/specodec-runtime-csharp/bin/Release/net8.0/specodec.pdb
+/src/specodec-runtime-csharp/obj/Release/net8.0/specodec-runtime-csharp.GeneratedMSBuildEditorConfig.editorconfig
+/src/specodec-runtime-csharp/obj/Release/net8.0/specodec-runtime-csharp.AssemblyInfoInputs.cache
+/src/specodec-runtime-csharp/obj/Release/net8.0/specodec-runtime-csharp.AssemblyInfo.cs
+/src/specodec-runtime-csharp/obj/Release/net8.0/specodec-runtime-csharp.csproj.CoreCompileInputs.cache
+/src/specodec-runtime-csharp/obj/Release/net8.0/specodec-runtime-csharp.sourcelink.json
+/src/specodec-runtime-csharp/obj/Release/net8.0/specodec.dll
+/src/specodec-runtime-csharp/obj/Release/net8.0/refint/specodec.dll
+/src/specodec-runtime-csharp/obj/Release/net8.0/specodec.pdb
+/src/specodec-runtime-csharp/obj/Release/net8.0/ref/specodec.dll

@@ -1,6 +1,19 @@
+using AllTypes.Arrays;
+using AllTypes.Edge;
+using AllTypes.Enums;
+using AllTypes.Extra;
+using AllTypes.Many;
+using AllTypes.Mixed;
 using AllTypes.nested.deep;
 using AllTypes.nested;
+using AllTypes.Nests;
+using AllTypes.Opt;
+using AllTypes.Pairs;
+using AllTypes.Recursive;
+using AllTypes.Scalars;
 using AllTypes;
+using AllTypes.Unions;
+using AllTypes.Wide;
 using Specodec;
 using System;
 using System.IO;
@@ -591,8 +604,21 @@ int failed = 0;
 
 // Model tests (by namespace)
         EmitTest_all_types.Run(ref passed, ref failed, vecDir, outDir);
+        EmitTest_all_types__scalars.Run(ref passed, ref failed, vecDir, outDir);
+        EmitTest_all_types__opt.Run(ref passed, ref failed, vecDir, outDir);
+        EmitTest_all_types__pairs.Run(ref passed, ref failed, vecDir, outDir);
+        EmitTest_all_types__many.Run(ref passed, ref failed, vecDir, outDir);
+        EmitTest_all_types__arrays.Run(ref passed, ref failed, vecDir, outDir);
+        EmitTest_all_types__nests.Run(ref passed, ref failed, vecDir, outDir);
+        EmitTest_all_types__mixed.Run(ref passed, ref failed, vecDir, outDir);
+        EmitTest_all_types__recursive.Run(ref passed, ref failed, vecDir, outDir);
+        EmitTest_all_types__wide.Run(ref passed, ref failed, vecDir, outDir);
+        EmitTest_all_types__edge.Run(ref passed, ref failed, vecDir, outDir);
+        EmitTest_all_types__extra.Run(ref passed, ref failed, vecDir, outDir);
         EmitTest_all_types_nested.Run(ref passed, ref failed, vecDir, outDir);
         EmitTest_all_types_nested_deep.Run(ref passed, ref failed, vecDir, outDir);
+        EmitTest_all_types__enums.Run(ref passed, ref failed, vecDir, outDir);
+        EmitTest_all_types__unions.Run(ref passed, ref failed, vecDir, outDir);
 
 
 Console.WriteLine($"emit-csharp: {passed} passed, {failed} failed");

@@ -1,8 +1,13 @@
 {
   "version": 2,
-  "dgSpecHash": "Srbk37tP7KU=",
+  "dgSpecHash": "XQfTrLL+3sU=",
   "success": true,
-  "projectFilePath": "/workspace/specodec-runtime-csharp/specodec-runtime-csharp.csproj",
-  "expectedPackageFiles": [],
+  "projectFilePath": "/src/specodec-runtime-csharp/specodec-runtime-csharp.csproj",
+  "expectedPackageFiles": [
+    "/root/.nuget/packages/microsoft.netcore.app.ref/8.0.26/microsoft.netcore.app.ref.8.0.26.nupkg.sha512",
+    "/root/.nuget/packages/microsoft.aspnetcore.app.ref/8.0.26/microsoft.aspnetcore.app.ref.8.0.26.nupkg.sha512",
+    "/root/.nuget/packages/microsoft.netcore.app.ref/9.0.15/microsoft.netcore.app.ref.9.0.15.nupkg.sha512",
+    "/root/.nuget/packages/microsoft.aspnetcore.app.ref/9.0.15/microsoft.aspnetcore.app.ref.9.0.15.nupkg.sha512"
+  ],
   "logs": []
 }
