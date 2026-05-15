@@ -21,8 +21,8 @@ public static void WriteUnionFieldHolder(SpecWriter w, UnionFieldHolder obj) {
 public static readonly SpecCodec<UnionFieldHolder> UnionFieldHolderCodec = new(
     Encode: (w, obj) => WriteUnionFieldHolder(w, obj),
     Decode: r => {
-        Shape _Shape = null!;
-        Ident _Id = null!;
+        Shape _Shape = new ShapeUndefined();
+        Ident _Id = new IdentUndefined();
         r.BeginObject();
         while (r.HasNextField()) {
             switch (r.ReadFieldName()) {
@@ -119,8 +119,8 @@ public static void WriteUnionMixedHolder(SpecWriter w, UnionMixedHolder obj) {
 public static readonly SpecCodec<UnionMixedHolder> UnionMixedHolderCodec = new(
     Encode: (w, obj) => WriteUnionMixedHolder(w, obj),
     Decode: r => {
-        ResultMsg _Result = null!;
-        Tagged _Tag = null!;
+        ResultMsg _Result = new ResultMsgUndefined();
+        Tagged _Tag = new TaggedUndefined();
         int _Count = 0;
         r.BeginObject();
         while (r.HasNextField()) {
@@ -155,8 +155,8 @@ public static void WriteUnionScalarHolder(SpecWriter w, UnionScalarHolder obj) {
 public static readonly SpecCodec<UnionScalarHolder> UnionScalarHolderCodec = new(
     Encode: (w, obj) => WriteUnionScalarHolder(w, obj),
     Decode: r => {
-        Ident _Id = null!;
-        ScalarUnion _Sc = null!;
+        Ident _Id = new IdentUndefined();
+        ScalarUnion _Sc = new ScalarUnionUndefined();
         string _Label = "";
         r.BeginObject();
         while (r.HasNextField()) {
@@ -177,6 +177,7 @@ public abstract record Shape;
 
 public record ShapeCircle(Coord Value) : Shape;
 public record ShapeRect(Range32 Value) : Shape;
+public record ShapeUndefined() : Shape;
 
 public static class ShapeMethods {
 public static void WriteShape(SpecWriter w, Shape obj) {
@@ -184,6 +185,7 @@ public static void WriteShape(SpecWriter w, Shape obj) {
     switch (obj) {
         case ShapeCircle v: w.WriteField("circle"); CoordMethods.WriteCoord(w, v.Value); break;
         case ShapeRect v: w.WriteField("rect"); Range32Methods.WriteRange32(w, v.Value); break;
+        default: throw new Exception("cannot encode Undefined for Shape");
     }
     w.EndObject();
 }
@@ -209,6 +211,7 @@ public abstract record Ident;
 
 public record IdentName(string Value) : Ident;
 public record IdentNumber(int Value) : Ident;
+public record IdentUndefined() : Ident;
 
 public static class IdentMethods {
 public static void WriteIdent(SpecWriter w, Ident obj) {
@@ -216,6 +219,7 @@ public static void WriteIdent(SpecWriter w, Ident obj) {
     switch (obj) {
         case IdentName v: w.WriteField("name"); w.WriteString(v.Value); break;
         case IdentNumber v: w.WriteField("number"); w.WriteInt32(v.Value); break;
+        default: throw new Exception("cannot encode Undefined for Ident");
     }
     w.EndObject();
 }
@@ -241,6 +245,7 @@ public abstract record ResultMsg;
 
 public record ResultMsgOk(string Value) : ResultMsg;
 public record ResultMsgErr(Label Value) : ResultMsg;
+public record ResultMsgUndefined() : ResultMsg;
 
 public static class ResultMsgMethods {
 public static void WriteResultMsg(SpecWriter w, ResultMsg obj) {
@@ -248,6 +253,7 @@ public static void WriteResultMsg(SpecWriter w, ResultMsg obj) {
     switch (obj) {
         case ResultMsgOk v: w.WriteField("ok"); w.WriteString(v.Value); break;
         case ResultMsgErr v: w.WriteField("err"); LabelMethods.WriteLabel(w, v.Value); break;
+        default: throw new Exception("cannot encode Undefined for ResultMsg");
     }
     w.EndObject();
 }
@@ -274,6 +280,7 @@ public abstract record Tagged;
 public record TaggedTag(string Value) : Tagged;
 public record TaggedScore(double Value) : Tagged;
 public record TaggedActive(bool Value) : Tagged;
+public record TaggedUndefined() : Tagged;
 
 public static class TaggedMethods {
 public static void WriteTagged(SpecWriter w, Tagged obj) {
@@ -282,6 +289,7 @@ public static void WriteTagged(SpecWriter w, Tagged obj) {
         case TaggedTag v: w.WriteField("tag"); w.WriteString(v.Value); break;
         case TaggedScore v: w.WriteField("score"); w.WriteFloat64(v.Value); break;
         case TaggedActive v: w.WriteField("active"); w.WriteBool(v.Value); break;
+        default: throw new Exception("cannot encode Undefined for Tagged");
     }
     w.EndObject();
 }
@@ -310,6 +318,7 @@ public record ScalarUnionS(string Value) : ScalarUnion;
 public record ScalarUnionI(int Value) : ScalarUnion;
 public record ScalarUnionF(double Value) : ScalarUnion;
 public record ScalarUnionB(bool Value) : ScalarUnion;
+public record ScalarUnionUndefined() : ScalarUnion;
 
 public static class ScalarUnionMethods {
 public static void WriteScalarUnion(SpecWriter w, ScalarUnion obj) {
@@ -319,6 +328,7 @@ public static void WriteScalarUnion(SpecWriter w, ScalarUnion obj) {
         case ScalarUnionI v: w.WriteField("i"); w.WriteInt32(v.Value); break;
         case ScalarUnionF v: w.WriteField("f"); w.WriteFloat64(v.Value); break;
         case ScalarUnionB v: w.WriteField("b"); w.WriteBool(v.Value); break;
+        default: throw new Exception("cannot encode Undefined for ScalarUnion");
     }
     w.EndObject();
 }
@@ -346,6 +356,7 @@ public abstract record OptUnionHolder;
 
 public record OptUnionHolderShape(Shape Value) : OptUnionHolder;
 public record OptUnionHolderId(Ident Value) : OptUnionHolder;
+public record OptUnionHolderUndefined() : OptUnionHolder;
 
 public static class OptUnionHolderMethods {
 public static void WriteOptUnionHolder(SpecWriter w, OptUnionHolder obj) {
@@ -353,6 +364,7 @@ public static void WriteOptUnionHolder(SpecWriter w, OptUnionHolder obj) {
     switch (obj) {
         case OptUnionHolderShape v: w.WriteField("shape"); ShapeMethods.WriteShape(w, v.Value); break;
         case OptUnionHolderId v: w.WriteField("id"); IdentMethods.WriteIdent(w, v.Value); break;
+        default: throw new Exception("cannot encode Undefined for OptUnionHolder");
     }
     w.EndObject();
 }
@@ -379,6 +391,7 @@ public abstract record MixedUnion;
 public record MixedUnionPoint(Coord Value) : MixedUnion;
 public record MixedUnionLabel(string Value) : MixedUnion;
 public record MixedUnionCount(int Value) : MixedUnion;
+public record MixedUnionUndefined() : MixedUnion;
 
 public static class MixedUnionMethods {
 public static void WriteMixedUnion(SpecWriter w, MixedUnion obj) {
@@ -387,6 +400,7 @@ public static void WriteMixedUnion(SpecWriter w, MixedUnion obj) {
         case MixedUnionPoint v: w.WriteField("point"); CoordMethods.WriteCoord(w, v.Value); break;
         case MixedUnionLabel v: w.WriteField("label"); w.WriteString(v.Value); break;
         case MixedUnionCount v: w.WriteField("count"); w.WriteInt32(v.Value); break;
+        default: throw new Exception("cannot encode Undefined for MixedUnion");
     }
     w.EndObject();
 }
@@ -413,6 +427,7 @@ public abstract record NestedUnion;
 
 public record NestedUnionResult(ResultMsg Value) : NestedUnion;
 public record NestedUnionShape(Shape Value) : NestedUnion;
+public record NestedUnionUndefined() : NestedUnion;
 
 public static class NestedUnionMethods {
 public static void WriteNestedUnion(SpecWriter w, NestedUnion obj) {
@@ -420,6 +435,7 @@ public static void WriteNestedUnion(SpecWriter w, NestedUnion obj) {
     switch (obj) {
         case NestedUnionResult v: w.WriteField("result"); ResultMsgMethods.WriteResultMsg(w, v.Value); break;
         case NestedUnionShape v: w.WriteField("shape"); ShapeMethods.WriteShape(w, v.Value); break;
+        default: throw new Exception("cannot encode Undefined for NestedUnion");
     }
     w.EndObject();
 }

@@ -5,7 +5,7 @@
   },
   "projects": {
     "/src/specodec-runtime-csharp/specodec-runtime-csharp.csproj": {
-      "version": "0.0.1",
+      "version": "1.0.0",
       "restore": {
         "projectUniqueName": "/src/specodec-runtime-csharp/specodec-runtime-csharp.csproj",
         "projectName": "specodec",

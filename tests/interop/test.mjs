@@ -33,16 +33,16 @@ const srcDir = join(__dir, 'emit');
 if (!existsSync(srcDir)) mkdirSync(srcDir, { recursive: true });
 run(`VEC_DIR=${VEC_DIR} node generate_emit_runner.mjs`);
 
-console.log('\n=== Step 6: Build runtime DLL ===');
-const csDir = join(__dir, '..', '..');
-run(`cd ${csDir} && dotnet build -c Release`);
-
-const dllPath = join(csDir, 'bin', 'Release', 'net9.0', 'specodec.dll');
+console.log('\n=== Step 6: Fetch runtime from Forgejo NuGet ===');
 const emitDir = join(__dir, 'emit');
 
+// Download NuGet package and extract DLL
+const nugetUrl = "http://10.199.64.20:3000/api/packages/specodec/nuget/package/specodec/1.0.0/specodec.1.0.0.nupkg";
+run(`curl -sfL -o /tmp/specodec.nupkg "${nugetUrl}"`);
+run(`unzip -o /tmp/specodec.nupkg -d /tmp/specodec-nuget`);
 const emitRuntimeDir = join(emitDir, 'runtime');
 if (!existsSync(emitRuntimeDir)) mkdirSync(emitRuntimeDir, { recursive: true });
-run(`cp ${dllPath} ${emitRuntimeDir}/specodec.dll`);
+run(`cp /tmp/specodec-nuget/lib/net9.0/specodec.dll ${emitRuntimeDir}/specodec.dll || cp /tmp/specodec-nuget/lib/net8.0/specodec.dll ${emitRuntimeDir}/specodec.dll || true`);
 
 const alltypesDir = join(emitDir, 'alltypes');
 if (existsSync(alltypesDir)) rmSync(alltypesDir, { recursive: true });
